@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloud File Automation</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#0f172a;
+    color:white;
+    max-width:600px;
+    margin:auto;
+    padding:20px;
+}
+
+h2{
+    text-align:center;
+}
+
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:10px;
+    margin-top:20px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    font-size:16px;
+    background:#3b82f6;
+    border:none;
+    color:white;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#2563eb;
+}
+
+input{
+    width:100%;
+    margin-top:10px;
+}
+
+.file{
+    display:flex;
+    justify-content:space-between;
+    margin-top:10px;
+    padding:10px;
+    border:1px solid #334155;
+    border-radius:6px;
+}
+
+.status{
+    margin-top:10px;
+    font-size:14px;
+    color:#94a3b8;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>☁️ Cloud File Automation</h2>
+
+<div class="card">
+
+<input type="file" id="fileInput" multiple>
+<select id="actionSelect">
+  <option value="image-to-pdf">Image → PDF</option>
+  <option value="pdf-to-docx">PDF → DOCX</option>
+  <option value="docx-to-pdf">DOCX → PDF</option>
+  <option value="merge-pdfs">Merge PDFs</option>
+</select>
+
+<button onclick="upload()">Run</button>
+
+<p id="status" class="status">Status: Ready</p>
+
+</div>
+
+<div class="card">
+
+<h3>Converted Files</h3>
+<div id="fileList"></div>
+
+</div>
+
+<script>
+
+async function upload() {
+    const action = document.getElementById("actionSelect").value;
+    const files = document.getElementById("fileInput").files;
+    const status = document.getElementById("status");
+
+    console.log("Selected action:", action);
+
+    if (files.length === 0) {
+        status.innerText = "Please select a file";
+        return;
+    }
+
+    status.innerText = "Uploading & converting...";
+
+    const formData = new FormData();
+
+    if (action === "merge-pdfs") {
+        for (const file of files) {
+            formData.append("files", file);
+        }
+    } else {
+        formData.append("file", files[0]);
+    }
+
+    try {
+        let endpoint = "";
+
+        if (action === "image-to-pdf") {
+            endpoint = "/image-to-pdf/";
+        } else if (action === "pdf-to-docx") {
+            endpoint = "/pdf-to-docx/";
+        } else if (action === "docx-to-pdf") {
+            endpoint = "/docx-to-pdf/";
+        } else if (action === "merge-pdfs") {
+            endpoint = "/merge-pdfs/";
+        } else {
+            alert("Feature coming soon");
+            return;
+        }
+
+        const res = await fetch(endpoint, {
+            method: "POST",
+            body: formData,
+        });
+
+        const data = await res.json();
+
+        status.innerText = data.message || "Done ✅";
+
+        await loadFiles();
+    } catch (err) {
+        console.error(err);
+        status.innerText = "Error occurred ❌";
+    }
+}
+
+async function loadFiles() {
+    const res = await fetch("/files");
+    const data = await res.json();
+
+    const container = document.getElementById("fileList");
+    container.innerHTML = "";
+
+    data.files.forEach((file) => {
+        container.innerHTML += `
+            <div class="file">
+                <span>${file}</span>
+                <a href="/download/${file}" style="color:#3b82f6;">Download</a>
+            </div>
+        `;
+    });
+}
+
+loadFiles();
+
+</script>
+
+</body>
+</html>
