@@ -1,3 +1,4 @@
+<img width="939" height="610" alt="cloud_storage_app" src="https://github.com/user-attachments/assets/84c1b850-4b26-465b-9b31-ed30ef025930" />
 Cloud File Automation Tool
 
 A web-based file conversion platform built with FastAPI.
