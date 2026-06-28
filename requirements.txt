@@ -13,9 +13,11 @@ MarkupSafe==3.0.3
 numpy==2.4.3
 opencv-python-headless==4.13.0.92
 pdf2docx==0.5.12
+pillow==12.2.0
 pydantic==2.12.5
 pydantic_core==2.41.5
 PyMuPDF==1.27.2
+PyPDF2==3.0.1
 python-docx==1.2.0
 python-multipart==0.0.22
 starlette==0.52.1

@@ -60,6 +60,33 @@ input{
     font-size:14px;
     color:#94a3b8;
 }
+.drop-zone{
+    border:3px dashed #3b82f6;
+    border-radius:10px;
+    padding:40px;
+    text-align:center;
+    transition:.25s;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+.drop-zone:hover{
+    background:#172554;
+}
+
+.drop-zone.dragover{
+    background:#1d4ed8;
+    border-color:#60a5fa;
+}
+
+.drop-zone p{
+    margin:10px 0;
+}
+
+#selectedFiles{
+    margin-top:15px;
+    color:#cbd5e1;
+}
 </style>
 
 </head>
@@ -70,7 +97,25 @@ input{
 
 <div class="card">
 
-<input type="file" id="fileInput" multiple>
+<div id="dropZone" class="drop-zone">
+    <p>📁 Drag & Drop Files Here</p>
+    <p>or</p>
+
+    <input
+        type="file"
+        id="fileInput"
+        multiple
+        hidden
+    >
+
+    <button type="button" onclick="document.getElementById('fileInput').click()">
+        Browse Files
+    </button>
+
+    <p id="selectedFiles" class="status">
+        No files selected
+    </p>
+</div>
 <select id="actionSelect">
   <option value="image-to-pdf">Image → PDF</option>
   <option value="pdf-to-docx">PDF → DOCX</option>
@@ -93,6 +138,9 @@ input{
 
 <script>
 
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+const selectedFiles = document.getElementById("selectedFiles");
 async function upload() {
     const action = document.getElementById("actionSelect").value;
     const files = document.getElementById("fileInput").files;
@@ -166,6 +214,48 @@ async function loadFiles() {
     });
 }
 
+dropZone.addEventListener("click", () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener("change", () => {
+    updateSelectedFiles(fileInput.files);
+});
+
+dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+});
+
+dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("dragover");
+});
+
+dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+
+    dropZone.classList.remove("dragover");
+
+    fileInput.files = e.dataTransfer.files;
+
+    updateSelectedFiles(fileInput.files);
+});
+
+function updateSelectedFiles(files){
+
+    if(files.length === 0){
+        selectedFiles.innerText = "No files selected";
+        return;
+    }
+
+    let names = [];
+
+    for(const file of files){
+        names.push(file.name);
+    }
+
+    selectedFiles.innerText = names.join(", ");
+}
 loadFiles();
 
 </script>

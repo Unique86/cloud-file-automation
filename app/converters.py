@@ -3,8 +3,8 @@ from pdf2docx import Converter
 from PIL import Image
 from PyPDF2 import PdfMerger
 from docx import Document
-from docx2pdf import convert
 import os
+import subprocess
 
 # PDF → DOCX
 async def pdf_to_docx(input_path, output_path):
@@ -15,7 +15,20 @@ async def pdf_to_docx(input_path, output_path):
 # DOCX → PDF
 # (example using python-docx + reportlab or any method you used)
 def docx_to_pdf(input_path, output_path):
-    convert(input_path, output_path)
+    output_dir = os.path.dirname(output_path)
+
+    subprocess.run(
+        [
+            "libreoffice",
+            "--headless",
+            "--convert-to",
+            "pdf",
+            "--outdir",
+            output_dir,
+            input_path,
+        ],
+        check=True,
+    )
 
 
 # Image → PDF
