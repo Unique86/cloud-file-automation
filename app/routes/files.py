@@ -24,7 +24,8 @@ async def pdf_to_docx(file: UploadFile = File(...)):
 
     unique_name = f"{uuid.uuid4()}_{file.filename}"
     input_path = f"uploads/{unique_name}"
-    output_path = f"outputs/{uuid.uuid4()}.pdf"
+    output_filename = f"{uuid.uuid4()}_{name}.docx"
+    output_path = f"outputs/{output_filename}"
 
     with open(input_path, "wb") as f:
         f.write(await file.read())
